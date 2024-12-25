@@ -14,27 +14,30 @@ export class TasksService {
      return create;
     }
   }
-
  async  findAll(userId:number) {
    const tasks = await this.prismaService.task.findMany({where:{userId}});
-   if(tasks.length>0){
+   if(tasks.length){
     return tasks;
    }
    else
-   throw new BadRequestException(`No user Found`);
+   throw new BadRequestException(`No Tasks Found`);
   }
-
+  
   async findOne(id: number) {
     const tasks = await this.prismaService.task.findFirst({where:{id}});
+    if(tasks){
+      return tasks;
+    }
+    else{
+      throw new BadRequestException(`task not found`);
+    }
   }
   async update(id: number, updateTaskDto:UpdateTaskDto, userId:number) {
    const allUserTasks = await this.prismaService.task.findMany({where:{userId}});
    const otherUserTasks = allUserTasks.filter(task => task.id !== id);
-   const length= otherUserTasks.length;
-  //  console.log(length>0);
-   if(length>0){
+  //  const length= otherUserTasks.length;
+   if(otherUserTasks.length){
      const abc =otherUserTasks.filter(task => task.title == updateTaskDto.title)
-    //  console.log(abc);
      if(abc.length>0){
       throw new BadRequestException(`Sakyo`);
      }
